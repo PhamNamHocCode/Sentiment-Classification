@@ -1,5 +1,5 @@
 import streamlit as st
-import database as dbL
+import database as db
 import sentiment as nlp
 
 # KHỞI TẠO
