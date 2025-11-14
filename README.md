@@ -1,38 +1,52 @@
-# Sentiment-Classification
+# Đồ án: Trợ lý phân loại cảm xúc tiếng Việt (Vietnamese Sentiment Assistant)
 
-## Mô tả
-Ứng dụng phân loại cảm xúc tiếng Việt sử dụng mô hình PhoBERT và giao diện Streamlit. Ứng dụng cho phép người dùng nhập câu tiếng Việt và nhận kết quả phân loại cảm xúc (Tích cực, Tiêu cực, Trung tính). Lịch sử phân loại cũng được lưu trữ và hiển thị trong giao diện.
+Một ứng dụng "Trợ lý phân loại cảm xúc tiếng Việt" được phát triển cho đồ án môn học. Ứng dụng cho phép người dùng nhập vào một câu tiếng Việt và trả về kết quả phân loại cảm xúc (Tích cực, Trung tính, Tiêu cực) sử dụng mô hình Transformer (PhoBERT).
 
-## Cài đặt
-1. Cài đặt Python (phiên bản >= 3.8).
-2. Cài đặt các thư viện cần thiết:
-   ```bash
-   pip install -r requirements.txt
-   ```
-   Hoặc cài đặt thủ công:
-   ```bash
-   pip install transformers torch
-   pip install streamlit pandas underthesea
-   ```
+## 1. Tính năng chính
 
-## Cách chạy ứng dụng
-1. Chạy ứng dụng bằng lệnh:
-   ```bash
-   streamlit run app.py
-   ```
-2. Mở trình duyệt và truy cập địa chỉ được cung cấp (thường là `http://localhost:8501`).
+* **Nhập liệu:** Người dùng nhập một câu tiếng Việt tự do qua giao diện Streamlit.
+* **Phân loại cảm xúc:** Ứng dụng sử dụng mô hình `vinai/phobert-base-v2` từ Hugging Face để phân loại cảm xúc thành 3 nhãn:
+    * `POSITIVE` (Tích cực)
+    * `NEUTRAL` (Trung tính)
+    * `NEGATIVE` (Tiêu cực)
+* **Lưu trữ cục bộ:** Toàn bộ lịch sử phân loại (bao gồm câu nhập vào, nhãn cảm xúc, và thời gian) được lưu trữ trong một cơ sở dữ liệu **SQLite** cục bộ
+* **Hiển thị kết quả:** Giao diện hiển thị ngay lập tức kết quả phân loại và danh sách lịch sử 50 lần phân loại gần nhất.
 
-## Cách sử dụng
-1. Nhập câu tiếng Việt vào ô nhập liệu.
-2. Nhấn nút "Phân loại cảm xúc" để xem kết quả.
-3. Xem lịch sử phân loại ở cột bên phải.
+## 2. Công nghệ sử dụng
 
-## Cấu trúc thư mục
-- `app.py`: File chính để chạy ứng dụng.
-- `sentiment.py`: Xử lý logic phân loại cảm xúc.
-- `local_model/`: Chứa các file liên quan đến mô hình PhoBERT.
-- `README.md`: Hướng dẫn sử dụng ứng dụng.
+* **Ngôn ngữ:** Python
+* **Giao diện:** Streamlit 
+* **NLP Model:** `vinai/phobert-base-v2` (Hugging Face Transformers)
+* **Tiền xử lý:** `underthesea` (cho word tokenization)
+* **Database:** `sqlite3` (Thư viện chuẩn của Python)
 
-## Ghi chú
-- Đảm bảo kết nối Internet để tải model PhoBERT khi chạy lần đầu.
-- Nếu gặp lỗi, kiểm tra lại các thư viện đã được cài đặt đúng chưa.
+## 3. Cài đặt và Chạy dự án
+
+### Yêu cầu
+* Python 3.8+
+
+### Hướng dẫn cài đặt
+
+1.  **Clone repository:**
+    ```bash
+    git clone https://github.com/PhamNamHocCode/Sentiment-Classification.git
+    cd [TEN_THU_MUC]
+    ```
+
+2.  **(Khuyến khích) Tạo môi trường ảo:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # Trên Windows dùng: venv\Scripts\activate
+    ```
+
+3.  **Cài đặt các thư viện cần thiết:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### Hướng dẫn sử dụng
+
+Chạy ứng dụng Streamlit bằng câu lệnh sau:
+
+```bash
+streamlit run app.py
