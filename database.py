@@ -4,13 +4,13 @@ from datetime import datetime
 
 DB_FILE = "sentiment_history.db"
 
-"""Tạo kết nối đến CSDL SQLite."""
+#Tạo kết nối đến CSDL SQLite
 def get_db_connection():
     conn = sqlite.connect(DB_FILE)
     conn.row_factory = sqlite.Row
     return conn
 
-"""Khởi tạo bảng sentiments nếu chưa tồn tại."""
+#Khởi tạo bảng sentiments nếu chưa tồn tại
 def init_db():
     conn = get_db_connection()
     try:
@@ -27,10 +27,8 @@ def init_db():
         print(f"Lỗi khi khởi tạo DB: {e}")
     finally:
         conn.close()
-"""
-    Lưu kết quả phân loại vào CSDL
-    Sử dụng parameterized queries (?) để chống SQL Injection
-"""
+
+    # Lưu kết quả phân loại vào CSDL. Sử dụng parameterized queries (?) để chống SQL Injection
 def save_sentiment(text, sentiment):
     
     conn = get_db_connection()
@@ -63,3 +61,27 @@ def load_history():
         return pd.DataFrame(columns=["timestamp", "text", "sentiment"]) # Trả về DF rỗng nếu lỗi
     finally:
         conn.close()
+
+def clear_history():
+    """
+    Xóa TẤT CẢ dữ liệu khỏi bảng sentiments.
+    (Đáp ứng yêu cầu: Thêm nút xóa lịch sử)
+    """
+    conn = None
+    try:
+        conn = sqlite.connect(DB_FILE)
+        cursor = conn.cursor()
+        
+        # Thực thi lệnh DELETE để xóa sạch bảng
+        cursor.execute("DELETE FROM sentiments")
+        
+        conn.commit()
+        print("Đã xóa toàn bộ lịch sử trong CSDL.")
+        
+    except sqlite.Error as e:
+        print(f"Lỗi SQLite khi xóa lịch sử: {e}")
+        # Ném lỗi lại để app.py có thể bắt và thông báo
+        raise e 
+    finally:
+        if conn:
+            conn.close()
