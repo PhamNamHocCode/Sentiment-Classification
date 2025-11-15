@@ -19,7 +19,7 @@ TEXT_NORM_DICT = {
 #Tải pipeline và cache lại
 @st.cache_resource
 def load_model():
-    print("Đang tải model . . .)")
+    print("Đang tải model . . .")
     try:
         nlp_pipeline = pipeline('sentiment-analysis', model=MODEL_NAME)
         print("Tải model thành công")
@@ -31,7 +31,7 @@ def load_model():
 
 # Hàm Xử lý
 #Chuẩn hóa văn bản
-def preprocess_text(text):
+def preprocess(text):
     text = text.lower()
     
     for key, value in TEXT_NORM_DICT.items():
@@ -74,7 +74,7 @@ def classify_sentiment(text):
         }
 
     # 1. Tiền xử lý
-    processed_text = preprocess_text(text)
+    processed_text = preprocess(text)
 
     # 2. Phân loại cảm xúc
     result = nlp_pipeline(processed_text)[0]
