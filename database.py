@@ -52,21 +52,16 @@ def load_history():
     
     conn = get_db_connection()
     try:
-        # Yêu cầu: Giới hạn 50 bản ghi mới nhất
-        query = "SELECT timestamp, text, sentiment FROM sentiments ORDER BY timestamp DESC LIMIT 50"
+        query = "SELECT id, timestamp, text, sentiment FROM sentiments ORDER BY timestamp DESC LIMIT 50"
         df = pd.read_sql_query(query, conn)
         return df
     except Exception as e:
         print(f"Lỗi khi tải lịch sử: {e}")
-        return pd.DataFrame(columns=["timestamp", "text", "sentiment"]) # Trả về DF rỗng nếu lỗi
+        return pd.DataFrame(columns=["id", "timestamp", "text", "sentiment"])
     finally:
         conn.close()
-
+# Xóa tất cả dữ liệu khỏi bảng
 def clear_history():
-    """
-    Xóa TẤT CẢ dữ liệu khỏi bảng sentiments.
-    (Đáp ứng yêu cầu: Thêm nút xóa lịch sử)
-    """
     conn = None
     try:
         conn = sqlite.connect(DB_FILE)

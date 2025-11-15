@@ -2,6 +2,7 @@ import streamlit as st
 from transformers import pipeline
 import re
 from underthesea import word_tokenize
+import sys
 
 # Cấu hình NLP
 MODEL_NAME = "wonrax/phobert-base-vietnamese-sentiment"
@@ -10,9 +11,25 @@ LABEL_MAP = {
     "NEG": "NEGATIVE",
     "NEU": "NEUTRAL"
 }
-TEXT_NORM_DICT = {
-    "rat": "rất",
-    "dỡ": "dở"
+PREPROCESSING_DICT = {
+    "rat": "rất", 
+    "dỡ": "dở", 
+    "bt": "bình thường", 
+    "ok": "tốt",
+    "good": "tốt", "gud": "tốt", 
+    "k": "không", "ko": "không",
+    "bth": "bình thường", 
+    "dc": "được", "đc": "được", 
+    "vs": "với",
+    "mn": "mọi người", 
+    "hnay": "hôm nay", 
+    "qá": "quá", 
+    "xau": "xấu",
+    "hk": "không", 
+    "thik": "thích", 
+    "dep": "đẹp", 
+    "sp": "sản phẩm",
+    "cham": "chậm"
 }
 
 # Tải Model
@@ -34,10 +51,14 @@ def load_model():
 def preprocess(text):
     text = text.lower()
     
-    for key, value in TEXT_NORM_DICT.items():
+    for key, value in PREPROCESSING_DICT.items():
         text = re.sub(r'\b' + re.escape(key) + r'\b', value, text)
         
-    text = word_tokenize(text, format="text")
+    try:
+        text = word_tokenize(text, format="text")
+    except Exception as e:
+        print(f"Lỗi khi word_tokenize: {e}. Sử dụng văn bản gốc đã chuẩn hóa.", file=sys.stderr)
+        pass
     
     return text
 
@@ -76,20 +97,29 @@ def classify_sentiment(text):
     # 1. Tiền xử lý
     processed_text = preprocess(text)
 
-    # 2. Phân loại cảm xúc
-    result = nlp_pipeline(processed_text)[0]
-    
-    score = result['score']
-    label = result['label']
+    try:
+        # 2. Phân loại cảm xúc
+        result = nlp_pipeline(processed_text)[0]
+        
+        score = result['score']
+        label = result['label']
 
-    if score < 0.5:
-        final_sentiment = "NEUTRAL"
-    else:
-        final_sentiment = LABEL_MAP.get(label, "NEUTRAL")
+        if score < 0.5:
+            final_sentiment = "NEUTRAL"
+        else:
+            final_sentiment = LABEL_MAP.get(label, "NEUTRAL")
 
-    return {
-        "text": text,
-        "sentiment": final_sentiment,
-        "score": score,
-        "error_message": None
-    }
+        return {
+            "text": text,
+            "sentiment": final_sentiment,
+            "score": score,
+            "error_message": None
+        }
+    except Exception as e:
+        print(f"Lỗi khi phân loại pipeline: {e}", file=sys.stderr)
+        return {
+            "text": text,
+            "sentiment": None,
+            "score": 0.0,
+            "error_message": f"Lỗi khi xử lý: {e}"
+        }
