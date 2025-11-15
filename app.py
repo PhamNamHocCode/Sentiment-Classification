@@ -16,7 +16,7 @@ st.set_page_config(page_title="Phân loại cảm xúc", layout="wide")
 # 3. Tải model NLP
 with st.spinner("Đang tải model PhoBERT..."):
     if not nlp.load_model():
-        st.error("Không thể tải model NLP. Ứng dụng không thể tiếp tục.")
+        st.error("Không thể tải model. Ứng dụng không thể tiếp tục.")
         st.stop()
         
 # GIAO DIỆN
@@ -30,7 +30,7 @@ with col1:
     st.subheader("Nhập câu cần phân loại:")
     
     # Ô nhập văn bản
-    user_input = st.text_input("Nhập câu tiếng Việt...", label_visibility="collapsed", placeholder="Ví dụ: Món ăn này dở quá")
+    user_input = st.text_input("Nhập câu tiếng Việt...", label_visibility="collapsed", placeholder="Ví dụ: Streamlit chạy chậm quá")
     
     # Nút phân loại
     submit_button = st.button("Phân loại cảm xúc")
@@ -51,10 +51,8 @@ with col2:
     
     history_placeholder = st.empty()
     
+    # Tải và hiển thị lịch sử từ CSDL lên placeholder
     def display_history():
-        """
-        Tải và hiển thị lịch sử từ CSDL lên placeholder.
-        """
         try:
             history_df = db.load_history() 
             if not history_df.empty:
@@ -83,26 +81,26 @@ if submit_button:
         
         # 3. Xử lý lỗi validation
         if error_msg:
-            result_placeholder.warning(f"⚠️ {error_msg}")
+            result_placeholder.warning(f"Lỗi {error_msg}")
         
         # 4. Xử lý phân loại thành công
         else:
             sentiment = result_dict['sentiment']
             score = result_dict['score']
             
-            display_text = f"Kết quả: **{sentiment}** (Độ tin cậy: {score:.2%})"
+            display_text = f"Kết quả: **{sentiment}**"
             
             if sentiment == "POSITIVE":
-                result_placeholder.success(f'{display_text} 😄')
+                result_placeholder.success(f'{display_text} 😄 --- [Độ tin cậy: {score:.2%}]')
             elif sentiment == "NEGATIVE":
-                result_placeholder.error(f'{display_text} 😞')
+                result_placeholder.error(f'{display_text} 😞 --- [Độ tin cậy: {score:.2%}]')
             else:
-                result_placeholder.info(f'{display_text} 😐')
+                result_placeholder.info(f'{display_text} 😐 --- [Độ tin cậy: {score:.2%}]')
 
             db.save_sentiment(result_dict['text'], sentiment)
             
             display_history()
-
+z
     except Exception as e:
         result_placeholder.error(f"Lỗi hệ thống: {e}")
         print(f"Lỗi hệ thống khi gọi classify_sentiment: {e}")
