@@ -1,361 +1,238 @@
-# 🎭 Sentiment Classification - Phân loại Cảm xúc Tiếng Việt
+# 🎭 Phân loại Cảm xúc Tiếng Việt
 
-> Ứng dụng phân loại cảm xúc (tích cực, trung tính, tiêu cực) từ văn bản tiếng Việt sử dụng PhoBERT Transformer
+Ứng dụng phân loại cảm xúc văn bản tiếng Việt sử dụng PhoBERT Transformer
 
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Model](https://img.shields.io/badge/model-PhoBERT-orange.svg)](https://huggingface.co/wonrax/phobert-base-vietnamese-sentiment)
-[![Accuracy](https://img.shields.io/badge/accuracy-%E2%89%A586.7%25-brightgreen.svg)](docs/test_results.md)
+[![Accuracy](https://img.shields.io/badge/accuracy-≥65%25-green.svg)](#test-cases)
 
 ## 📋 Mục lục
 
-- [Giới thiệu](#-giới-thiệu)
-- [Tính năng](#-tính-năng)
-- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
-- [Cài đặt](#-cài-đặt)
-- [Sử dụng](#-sử-dụng)
-- [Kiến trúc hệ thống](#-kiến-trúc-hệ-thống)
-- [Test Cases](#-test-cases)
-- [Đóng góp](#-đóng-góp)
-- [Giấy phép](#-giấy-phép)
+- [Giới thiệu](#giới-thiệu)
+- [Tính năng](#tính-năng)
+- [Công nghệ](#công-nghệ)
+- [Cài đặt](#cài-đặt)
+- [Sử dụng](#sử-dụng)
+- [Kiến trúc](#kiến-trúc)
+- [Test Cases](#test-cases)
 
-## 🎯 Giới thiệu
+## Giới thiệu
 
-**Sentiment Classification** là ứng dụng desktop phân loại cảm xúc tiếng Việt được xây dựng với Python và Tkinter, tích hợp PhoBERT Transformer để phân tích cảm xúc từ văn bản tiếng Việt
+Ứng dụng desktop phân loại cảm xúc tiếng Việt sử dụng PhoBERT Transformer. Nhận câu tiếng Việt và trả về nhãn cảm xúc: POSITIVE, NEUTRAL, NEGATIVE
 
-### Đặc điểm nổi bật
+### Đặc điểm
 
-- 🤖 **PhoBERT Transformer**: Model pre-trained đặc thù cho tiếng Việt
-- 📊 **3 nhãn cảm xúc**: POSITIVE, NEUTRAL, NEGATIVE
-- 🔤 **Xử lý văn bản linh hoạt**: Hỗ trợ viết tắt, thiếu dấu, slang
-- 💾 **Lưu lịch sử cục bộ**: SQLite database với parameterized queries
-- 🧪 **Test suite tích hợp**: 10 test cases với độ chính xác ≥65%
-- 🎨 **Giao diện thân thiện**: Tkinter GUI với threading cho xử lý không đồng bộ
+- Model PhoBERT pre-trained cho tiếng Việt
+- Xử lý viết tắt, thiếu dấu, slang
+- Lưu lịch sử SQLite với parameterized queries
+- 10 test cases tích hợp (yêu cầu ≥65% accuracy)
+- Giao diện Tkinter với threading
 
-## ✨ Tính năng
+## Tính năng
 
-### 1. Phân loại Cảm xúc
+### Phân loại cảm xúc
 
-Nhập câu tiếng Việt tự do và nhận kết quả phân loại ngay lập tức
+Nhập câu tiếng Việt và nhận kết quả phân loại
 
-**Hỗ trợ:**
-- ✅ Câu tiếng Việt chuẩn: "Hôm nay tôi rất vui"
-- ✅ Viết tắt: "Rat vui hom nay", "k thik sp nay"
-- ✅ Thiếu dấu: "Cham qua", "dep lam"
-- ✅ Slang: "sp này ok", "gud", "nice"
-- ✅ Độ tin cậy: Hiển thị confidence score (0-100%)
+Hỗ trợ:
+- Câu chuẩn: "Hôm nay tôi rất vui"
+- Thiếu dấu: "dep lam"
+- Viết gắt: "sp ok", "gud"
 
-**Kết quả:**
+Kết quả:
 ```json
 {
   "text": "Hôm nay tôi rất vui",
-  "sentiment": "POSITIVE",
-  "score": 0.95
+  "sentiment": "POSITIVE"
 }
 ```
 
-### 2. Lịch sử Phân loại
+### Lịch sử
 
-- 📜 **Lưu trữ tự động**: Mỗi phân loại được lưu vào SQLite
-- 🕐 **Timestamp**: Ghi lại thời gian phân loại chính xác
-- 📋 **Hiển thị 50 mục**: Danh sách 50 bản ghi mới nhất
-- 📥 **Tải thêm**: Nút "Tải thêm 50" để xem lịch sử cũ hơn
-- 🔄 **Làm mới**: Cập nhật danh sách real-time
-- 🗑️ **Xóa lịch sử**: Xóa toàn bộ với xác nhận
+- Lưu tự động vào SQLite
+- Hiển thị 50 bản ghi mới nhất
+- Nút "Tải thêm 50"
+- Làm mới và xóa lịch sử
 
-### 3. Test Cases Tự động
+### Test Cases
 
-- 🧪 **10 test cases**: Kiểm tra độ chính xác model
-- 📊 **Báo cáo chi tiết**: Bảng kết quả với từng case
-- ✅ **Yêu cầu ≥65%**: Đánh giá đạt/không đạt
-- 📈 **Confidence score**: Hiển thị độ tin cậy mỗi prediction
+- 10 test cases tích hợp
+- Báo cáo chi tiết
+- Yêu cầu ≥65% accuracy
 
-### 4. Tiền xử lý Văn bản
+### Tiền xử lý
 
-- 🔤 **Chuẩn hóa**: Lowercase, normalize spacing
-- 📖 **Từ điển lớn**: 100+ từ viết tắt/slang/thiếu dấu
-- 🔧 **Word tokenization**: Underthesea tokenizer
-- 🎯 **Tối ưu cho PhoBERT**: Format phù hợp model input
+- Chuẩn hóa: lowercase, spacing
+- Từ điển 40 từ viết tắt, không dấu
+- Tokenization với underthesea
 
-## 🛠️ Công nghệ sử dụng
+## Công nghệ
 
-| Công nghệ | Phiên bản | Mục đích |
-|-----------|-----------|----------|
-| **Python** | 3.8+ | Ngôn ngữ lập trình |
-| **Tkinter** | Built-in | Giao diện người dùng |
-| **PyTorch** | 2.0+ | Deep learning framework |
-| **Transformers** | 4.30+ | Hugging Face pipeline |
-| **PhoBERT** | phobert-base | Model phân loại cảm xúc |
-| **underthesea** | 1.3.5+ | Tokenization tiếng Việt |
-| **SQLite3** | Built-in | Cơ sở dữ liệu |
+| Công nghệ | Phiên bản | Mô tả |
+|-----------|-----------|-------|
+| Python | 3.8+ | Ngôn ngữ chính |
+| Tkinter | Built-in | Giao diện |
+| PyTorch | 2.0+ | Deep learning |
+| Transformers | 4.30+ | Hugging Face |
+| PhoBERT | wonrax/phobert-base-vietnamese-sentiment | Model sentiment |
+| underthesea | 1.3.5+ | Tokenization |
+| SQLite3 | Built-in | Database |
 
-## 📦 Cài đặt
+## Cài đặt
 
-### Yêu cầu hệ thống
+### Yêu cầu
 
-- Python 3.8 hoặc cao hơn
-- Windows 10/11, macOS 10.15+, hoặc Linux
-- 2GB RAM khả dụng (cho PhoBERT model)
-- Kết nối internet (lần đầu tải model)
+- Python 3.8+
+- 2GB RAM (cho PhoBERT)
+- Kết nối internet (lần đầu)
 
-### Hướng dẫn cài đặt
-
-**1. Clone repository**
+### Cài đặt
 
 ```bash
-git clone https://github.com/yourusername/sentiment-classification.git
+# Clone repository
+git clone <repo-url>
 cd sentiment-classification
-```
 
-**2. Tạo môi trường ảo (khuyến nghị)**
-
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-**3. Cài đặt dependencies**
-
-```bash
+# Cài dependencies
 pip install -r requirements.txt
+
+# Chạy ứng dụng
+python app.py
 ```
 
-**Lưu ý:** Lần đầu chạy sẽ tự động tải PhoBERT model (~1GB) từ Hugging Face
+Lần đầu chạy sẽ tải PhoBERT model (~1GB)
 
-**4. Chạy ứng dụng**
+## Sử dụng
+
+### Khởi động
 
 ```bash
 python app.py
 ```
 
-## 🚀 Sử dụng
+### Ví dụ
 
-### Khởi động ứng dụng
-
-```bash
-python app.py
-```
-
-### Giao diện chính
-
-```
-```
-
-### Ví dụ sử dụng
-
-**Ví dụ 1: Phân loại câu chuẩn**
+**Câu chuẩn**
 ```
 Input:  "Hôm nay tôi rất vui"
-Output: 😄 POSITIVE (Tin cậy: 95.2%)
+Output: 😄 POSITIVE
 ```
 
-**Ví dụ 2: Viết tắt + thiếu dấu**
+**Viết tắt**
 ```
 Input:  "Rat vui hom nay"
-Output: 😄 POSITIVE (Tin cậy: 92.1%)
-→ Đã chuẩn hóa: "Rất vui hôm nay"
+Output: 😄 POSITIVE
 ```
 
-**Ví dụ 3: Slang tiếng Anh**
+**Slang**
 ```
 Input:  "Sp nay gud lam"
-Output: 😄 POSITIVE (Tin cậy: 88.5%)
-→ Đã chuẩn hóa: "Sản phẩm này tốt lắm"
+Output: 😄 POSITIVE
 ```
 
-**Ví dụ 4: Câu trung tính**
+**Trung tính**
 ```
 Input:  "Thời tiết bình thường"
-Output: 😐 NEUTRAL (Tin cậy: 78.3%)
+Output: 😐 NEUTRAL
 ```
 
-**Ví dụ 5: Câu tiêu cực**
+**Tiêu cực**
 ```
 Input:  "Mệt mỏi quá hôm nay"
-Output: 😞 NEGATIVE (Tin cậy: 91.7%)
+Output: 😞 NEGATIVE
 ```
 
-## 🏗️ Kiến trúc hệ thống
+## Kiến trúc
 
-### Cấu trúc thư mục
+### Cấu trúc
 
 ```
 Sentiment-Classification/
-├── app.py                          # Entry point
+├── app.py
 ├── src/
-│   ├── __init__.py
-│   ├── core/                       # Business logic
-│   │   ├── database.py             # SQLite operations
-│   │   ├── sentiment.py            # PhoBERT classification
-│   │   └── preprocessing.py        # Text normalization
-│   └── ui/                         # User interface
-│       ├── main_window.py          # Tkinter main window
-│       └── test_dialog.py          # Test cases dialog
-├── requirements.txt                # Dependencies
-├── sentiment.db                    # SQLite database (auto-gen)
-├── app_streamlit_backup.py         # Streamlit version backup
-└── README.md                       # Documentation
+│   ├── core/
+│   │   ├── database.py
+│   │   ├── sentiment.py
+│   │   └── preprocessing.py
+│   └── ui/
+│       ├── main_window.py
+│       └── test_dialog.py
+├── requirements.txt
+└── sentiment.db
 ```
 
-### Pipeline xử lý
+### Pipeline
 
 ```
-┌─────────────────────────────────────────────────┐
-│ 1. INPUT VALIDATION                             │
-│    - Kiểm tra độ dài (≥5 ký tự)                │
-│    - Kiểm tra chứa chữ cái                     │
-└────────────────┬────────────────────────────────┘
-                 ↓
-┌─────────────────────────────────────────────────┐
-│ 2. PREPROCESSING                                │
-│    - Normalize: lowercase, spacing              │
-│    - Dictionary: viết tắt → từ đầy đủ          │
-│    - Tokenization: underthesea                  │
-└────────────────┬────────────────────────────────┘
-                 ↓
-┌─────────────────────────────────────────────────┐
-│ 3. PHOBERT CLASSIFICATION                       │
-│    - Pipeline: sentiment-analysis               │
-│    - Model: wonrax/phobert-base-vietnamese      │
-│    - Output: label + confidence score           │
-└────────────────┬────────────────────────────────┘
-                 ↓
-┌─────────────────────────────────────────────────┐
-│ 4. POST-PROCESSING                              │
-│    - Threshold: score < 0.5 → NEUTRAL          │
-│    - Mapping: POS/NEG/NEU → POSITIVE/etc       │
-└────────────────┬────────────────────────────────┘
-                 ↓
-┌─────────────────────────────────────────────────┐
-│ 5. SAVE & DISPLAY                               │
-│    - Save to SQLite                             │
-│    - Update UI (main thread)                    │
-└─────────────────────────────────────────────────┘
+Input → Validation → Preprocessing → PhoBERT → Post-processing → Save & Display
 ```
 
-### Database Schema
+Chi tiết:
+1. Validation: kiểm tra độ dài ≥5 ký tự, ≤50 ký tự
+2. Preprocessing: normalize + tokenize
+3. PhoBERT: sentiment-analysis pipeline
+4. Post-processing: threshold 0.5, mapping labels
+5. Save: SQLite với parameterized queries
+
+### Database
 
 ```sql
 CREATE TABLE sentiments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT NOT NULL,
-    sentiment TEXT NOT NULL,  -- POSITIVE/NEUTRAL/NEGATIVE
-    timestamp TEXT NOT NULL   -- YYYY-MM-DD HH:MM:SS
+    sentiment TEXT NOT NULL,
+    timestamp TEXT NOT NULL
 );
 ```
 
-### Threading Model
+### Threading
 
-```
-┌──────────────────────────────────────────┐
-│ MAIN THREAD (Tkinter UI)                 │
-│  - Render GUI                            │
-│  - Handle events                         │
-│  - Update display                        │
-└────────────┬─────────────────────────────┘
-             │
-             ├─> WORKER THREAD 1
-             │   - PhoBERT classification
-             │   - Long-running task
-             │
-             └─> WORKER THREAD 2
-                 - Test cases execution
-                 - Parallel processing
-```
+- Main thread: Tkinter UI
+- Worker threads: PhoBERT classification, test cases
+- Thread-safe UI update với `root.after()`
 
-## 🧪 Test Cases
+## Test Cases
 
-### 10 Test Cases chuẩn
+### 10 test cases
 
-| STT | Đầu vào | Mong đợi | Mô tả |
-|-----|---------|----------|-------|
-| 1 | Hôm nay tôi rất vui | POSITIVE | Câu chuẩn tích cực |
-| 2 | Món ăn này dỡ quá | NEGATIVE | Câu chuẩn tiêu cực |
-| 3 | Thời tiết bình thường | NEUTRAL | Câu trung tính |
-| 4 | Rat vui hom nay | POSITIVE | Viết tắt + thiếu dấu |
-| 5 | Công việc ổn định | NEUTRAL | Trung tính |
-| 6 | Phim này hay lắm | POSITIVE | Tích cực |
-| 7 | Tôi buồn vì thất bại | NEGATIVE | Tiêu cực rõ ràng |
-| 8 | Ngày mai đi học | NEUTRAL | Câu phát biểu |
-| 9 | Cảm ơn bạn rất nhiều | POSITIVE | Lời cảm ơn |
-| 10 | Mệt mỏi quá hôm nay | NEGATIVE | Tiêu cực |
+| STT | Đầu vào | Mong đợi |
+|-----|---------|----------|
+| 1 | Hôm nay tôi rất vui | POSITIVE |
+| 2 | Món ăn này dỡ quá | NEGATIVE |
+| 3 | Thời tiết bình thường | NEUTRAL |
+| 4 | Rat vui hom nay | POSITIVE |
+| 5 | Công việc ổn định | NEUTRAL |
+| 6 | Phim này hay lắm | POSITIVE |
+| 7 | Tôi buồn vì thất bại | NEGATIVE |
+| 8 | Ngày mai đi học | NEUTRAL |
+| 9 | Cảm ơn bạn rất nhiều | POSITIVE |
+| 10 | Mệt mỏi quá hôm nay | NEGATIVE |
 
 ### Chạy test
 
 1. Mở ứng dụng
-2. Click nút "🧪 Chạy 10 Test Cases"
-3. Xem kết quả trong dialog
+2. Click "Chạy 10 Test Cases"
+3. Xem kết quả
 
-**Kết quả mong đợi:**
-```
-✅ Passed: ≥6.5/10 cases
-✅ Accuracy: ≥65%
-✅ ĐẠT YÊU CẦU
-```
+Yêu cầu: ≥6.5/10 đúng (≥65% accuracy)
 
-## 🔒 Bảo mật
+## Bảo mật
 
 ### SQL Injection Prevention
 
 ```python
-# ❌ Không an toàn
-cursor.execute(f"INSERT INTO sentiments VALUES ('{text}')")
-
-# ✅ An toàn - Parameterized queries
-cursor.execute("INSERT INTO sentiments VALUES (?, ?, ?)", (text, sentiment, timestamp))
+# Sử dụng parameterized queries
+cursor.execute("INSERT INTO sentiments VALUES (?, ?, ?)", 
+               (text, sentiment, timestamp))
 ```
 
 ### Thread Safety
 
 ```python
-# ✅ Cập nhật UI từ main thread
+# Cập nhật UI từ main thread
 self.root.after(0, self._update_result, result)
 ```
 
-## 📝 Đóng góp
-
-Mọi đóng góp đều được hoan nghênh
-
-1. Fork repository
-2. Tạo branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Mở Pull Request
-
-## 📄 Giấy phép
-
-Dự án này được tạo cho mục đích học tập (Seminar chuyên đề)
-
-## 👥 Tác giả
-
-**Sinh viên thực hiện**
-- Họ tên: [Tên của bạn]
-- MSSV: [Mã số sinh viên]
-- Lớp: [Mã lớp]
-- Trường: Đại học Sài Gòn (SGU)
-
-**Giảng viên hướng dẫn**
-- [Tên giảng viên]
-
-## 📞 Liên hệ
-
-- 📧 Email: [your.email@example.com]
-- 🐙 GitHub: [@yourusername](https://github.com/yourusername)
-
-## 🙏 Lời cảm ơn
-
-- [Hugging Face Transformers](https://huggingface.co/transformers/) - Pipeline framework
-- [PhoBERT](https://github.com/VinAIResearch/PhoBERT) - Vietnamese pre-trained model
-- [Underthesea](https://github.com/undertheseanlp/underthesea) - Vietnamese NLP toolkit
-- [wonrax/phobert-base-vietnamese-sentiment](https://huggingface.co/wonrax/phobert-base-vietnamese-sentiment) - Fine-tuned sentiment model
-
 ---
 
-<p align="center">
-  Made with ❤️ for Vietnamese NLP<br>
-  ⭐ Star this repo if you find it helpful
-</p>
+**Seminar chuyên đề - Đại học Sài Gòn (SGU)**

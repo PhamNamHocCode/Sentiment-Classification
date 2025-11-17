@@ -101,7 +101,7 @@ class TestCaseDialog:
         button_frame = ttk.Frame(self.dialog, padding="10")
         button_frame.pack(fill="x")
         
-        self.start_btn = ttk.Button(button_frame, text="🚀 Bắt đầu", 
+        self.start_btn = ttk.Button(button_frame, text="Bắt đầu", 
                                     command=self._start_test)
         self.start_btn.pack(side="left", padx=5)
         
@@ -186,10 +186,10 @@ class TestCaseDialog:
         summary_text = f"Kết quả: {correct_count}/10 đúng - Độ chính xác: {accuracy:.1%}"
         
         if accuracy >= 0.65:
-            summary_text += " ✅ ĐẠT YÊU CẦU"
+            summary_text += " ĐẠT YÊU CẦU"
             color = "green"
         else:
-            summary_text += " ❌ CHƯA ĐẠT"
+            summary_text += " CHƯA ĐẠT"
             color = "red"
         
         self.summary_label.config(text=summary_text, foreground=color)
