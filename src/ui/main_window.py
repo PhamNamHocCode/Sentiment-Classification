@@ -1,6 +1,3 @@
-"""
-Main Window - Giao diện Tkinter chính
-"""
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 import threading
@@ -8,10 +5,7 @@ from src.core import database as db
 from src.core import sentiment as nlp
 from src.ui.test_dialog import TestCaseDialog
 
-
 class SentimentApp:
-    """Ứng dụng phân loại cảm xúc Tkinter"""
-    
     def __init__(self, root):
         self.root = root
         self.root.title("Phân loại Cảm xúc Tiếng Việt - PhoBERT")
@@ -31,7 +25,6 @@ class SentimentApp:
         
     def _create_widgets(self):
         """Tạo các widget giao diện"""
-        # ===== BÊN TRÁI: Input + Kết quả =====
         left_frame = ttk.Frame(self.root, padding="10")
         left_frame.grid(row=0, column=0, sticky="nsew", padx=(10, 5))
         
@@ -48,11 +41,11 @@ class SentimentApp:
         self.input_text = scrolledtext.ScrolledText(left_frame, height=4, 
                                                      font=("Arial", 11), wrap=tk.WORD)
         self.input_text.pack(fill="x", pady=(0, 10))
-        self.input_text.insert("1.0", "Ví dụ: Hôm nay tôi rất vui")
+        self.input_text.insert("1.0", "Ví dụ: Python khó quá")
         self.input_text.bind("<FocusIn>", self._clear_placeholder)
         
         # Nút phân loại
-        self.classify_btn = ttk.Button(left_frame, text="🔍 Phân loại cảm xúc", 
+        self.classify_btn = ttk.Button(left_frame, text="Phân loại cảm xúc", 
                                        command=self._handle_classify)
         self.classify_btn.pack(fill="x", pady=(0, 20))
         
@@ -75,10 +68,10 @@ class SentimentApp:
         self.result_label.pack(expand=True, pady=50)
         
         # Nút Test Cases
-        ttk.Button(left_frame, text="🧪 Chạy 10 Test Cases", 
+        ttk.Button(left_frame, text="Chạy 10 Test Cases", 
                   command=self._show_test_dialog).pack(fill="x", pady=(20, 0))
         
-        # ===== BÊN PHẢI: Lịch sử =====
+        # Lịch sử
         right_frame = ttk.Frame(self.root, padding="10")
         right_frame.grid(row=0, column=1, sticky="nsew", padx=(5, 10))
         
@@ -92,8 +85,6 @@ class SentimentApp:
         self.count_label = ttk.Label(header_frame, text="(0 bản ghi)", 
                                      font=("Arial", 9), foreground="gray")
         self.count_label.pack(side="left", padx=(5, 0))
-        
-        # Treeview lịch sử
         columns = ("ID", "Thời gian", "Nội dung", "Cảm xúc")
         self.tree = ttk.Treeview(right_frame, columns=columns, show="headings", height=20)
         
@@ -119,23 +110,22 @@ class SentimentApp:
         button_frame = ttk.Frame(right_frame)
         button_frame.pack(fill="x", pady=(10, 0))
         
-        ttk.Button(button_frame, text="🔄 Làm mới DS", 
+        ttk.Button(button_frame, text="Làm mới DS", 
                   command=self.refresh_history).pack(side="left", padx=(0, 5))
         
-        ttk.Button(button_frame, text="📥 Tải thêm 50", 
+        ttk.Button(button_frame, text="Tải thêm 50", 
                   command=self._load_more).pack(side="left", padx=5)
         
-        ttk.Button(button_frame, text="🗑️ Xóa lịch sử", 
+        ttk.Button(button_frame, text="Xóa lịch sử", 
                   command=self._clear_history).pack(side="left", padx=5)
         
-        # Cấu hình grid weight
         self.root.columnconfigure(0, weight=2)
         self.root.columnconfigure(1, weight=3)
         self.root.rowconfigure(0, weight=1)
     
     def _clear_placeholder(self, event):
         """Xóa placeholder khi focus vào input"""
-        if self.input_text.get("1.0", "end-1c") == "Ví dụ: Hôm nay tôi rất vui":
+        if self.input_text.get("1.0", "end-1c") == "Ví dụ: Python khó quá":
             self.input_text.delete("1.0", "end")
     
     def _handle_classify(self):
@@ -145,14 +135,14 @@ class SentimentApp:
         
         text = self.input_text.get("1.0", "end-1c").strip()
         
-        if not text or text == "Ví dụ: Hôm nay tôi rất vui":
+        if not text or text == "Ví dụ: Python khó quá":
             messagebox.showwarning("Cảnh báo", "Vui lòng nhập câu cần phân loại")
             return
         
         # Disable button và hiển thị loading
         self.is_processing = True
         self.classify_btn.config(state="disabled")
-        self.loading_label.config(text="⏳ Đang phân tích")
+        self.loading_label.config(text="Đang phân tích")
         self.result_label.config(text="Đang xử lý...", foreground="blue")
         
         # Chạy phân loại trong thread riêng
@@ -180,7 +170,7 @@ class SentimentApp:
         # Kiểm tra lỗi
         if result.get("error_message"):
             self.result_label.config(
-                text=f"❌ {result['error_message']}", 
+                text=f"Lỗi: {result['error_message']}", 
                 foreground="red"
             )
             return
@@ -214,10 +204,9 @@ class SentimentApp:
         self.is_processing = False
         self.classify_btn.config(state="normal")
         self.loading_label.config(text="")
-        self.result_label.config(text=f"❌ Lỗi: {error_msg}", foreground="red")
+        self.result_label.config(text=f"Lỗi: {error_msg}", foreground="red")
     
     def refresh_history(self):
-        """Tải lại lịch sử từ database"""
         # Xóa dữ liệu cũ
         for item in self.tree.get_children():
             self.tree.delete(item)

@@ -5,7 +5,7 @@ from transformers import pipeline
 from src.core.preprocessing import preprocess
 
 # Cấu hình model
-MODEL_NAME = "wonrax/phobert-base-vietnamese-sentiment"
+MODEL_NAME = "vinai/phobert-base-v2"
 
 # Mapping nhãn model -> nhãn yêu cầu
 LABEL_MAP = {
@@ -73,13 +73,13 @@ def classify_sentiment(text):
             "error_message": "Câu không hợp lệ (phải chứa ký tự chữ)"
         }
     
-    # Giới hạn độ dài tối đa 200 ký tự
-    if len(text) > 200:
+    # Giới hạn độ dài tối đa 50 ký tự
+    if len(text) > 50:
         return {
             "text": text,
             "sentiment": None,
             "score": 0.0,
-            "error_message": "Câu quá dài (tối đa 200 ký tự)"
+            "error_message": "Câu quá dài (tối đa 50 ký tự)"
         }
     
     # Load model

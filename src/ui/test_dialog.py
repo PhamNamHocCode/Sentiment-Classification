@@ -1,6 +1,3 @@
-"""
-Test Dialog - Dialog chạy 10 test cases
-"""
 import tkinter as tk
 from tkinter import ttk, messagebox
 import threading

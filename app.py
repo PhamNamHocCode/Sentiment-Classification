@@ -1,6 +1,3 @@
-"""
-Entry Point - Ứng dụng phân loại cảm xúc Tkinter
-"""
 import tkinter as tk
 from tkinter import messagebox
 import sys
@@ -15,7 +12,6 @@ from src.ui.main_window import SentimentApp
 
 
 def main():
-    """Khởi chạy ứng dụng"""
     # Khởi tạo database
     try:
         db.init_db()
