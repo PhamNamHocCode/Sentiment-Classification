@@ -50,14 +50,14 @@ NORMALIZATION_DICT = {
 
 def normalize_text(text):
     """
-    Chuẩn hóa văn bản tiếng Việt
+    Chuẩn hóa
     """
     if not text:
         return ""
     
     text = text.lower().strip()
     
-    # Thay thế từ viết tắt/thiếu dấu bằng từ điển
+    # Thay thế từ viết tắt, thiếu dấu bằng NORMALIZATION_DICT
     # Sử dụng word boundary \b để tránh thay thế nhầm
     for key, value in NORMALIZATION_DICT.items():
         pattern = r'\b' + re.escape(key) + r'\b'
@@ -80,7 +80,7 @@ def tokenize_vietnamese(text):
 
 def preprocess(text):
     """
-    Pipeline tiền xử lý đầy đủ
+    Pipeline tiền xử lý
     """
     normalized = normalize_text(text)
     

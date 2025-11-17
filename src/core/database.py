@@ -1,14 +1,9 @@
-"""
-Database - Quản lý SQLite cho lịch sử phân loại cảm xúc
-"""
 import sqlite3
 from datetime import datetime
 
 DB_FILE = "sentiment.db"
 
-
 def get_connection():
-    """Tạo kết nối đến database SQLite"""
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     return conn
@@ -37,11 +32,7 @@ def init_db():
 def save_sentiment(text, sentiment):
     """
     Lưu kết quả phân loại vào database
-    Sử dụng parameterized queries để chống SQL injection
-    
-    Args:
-        text (str): Câu gốc
-        sentiment (str): Nhãn cảm xúc (POSITIVE/NEUTRAL/NEGATIVE)
+    Sử dụng parameterized queries để ko bị SQL injection
     """
     conn = get_connection()
     try:
@@ -61,13 +52,6 @@ def save_sentiment(text, sentiment):
 def get_history(limit=50, offset=0):
     """
     Lấy lịch sử phân loại từ database
-    
-    Args:
-        limit (int): Số lượng bản ghi tối đa
-        offset (int): Vị trí bắt đầu (cho phân trang)
-        
-    Returns:
-        list: Danh sách dict chứa id, text, sentiment, timestamp
     """
     conn = get_connection()
     try:
@@ -99,7 +83,7 @@ def get_total_count():
 
 
 def clear_history():
-    """Xóa toàn bộ lịch sử phân loại"""
+    """Xóa toàn bộ lịch sử"""
     conn = get_connection()
     try:
         conn.execute("DELETE FROM sentiments")
@@ -114,9 +98,6 @@ def clear_history():
 def get_sentiment_stats():
     """
     Thống kê số lượng từng loại cảm xúc
-    
-    Returns:
-        dict: {"POSITIVE": count, "NEUTRAL": count, "NEGATIVE": count}
     """
     conn = get_connection()
     try:

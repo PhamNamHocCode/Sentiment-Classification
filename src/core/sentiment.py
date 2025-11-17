@@ -1,11 +1,8 @@
-"""
-Sentiment Analysis - Phân loại cảm xúc tiếng Việt sử dụng PhoBERT
-"""
 from transformers import pipeline
 from src.core.preprocessing import preprocess
 
-# Cấu hình model
-MODEL_NAME = "vinai/phobert-base-v2"
+# Model: https://huggingface.co/wonrax/phobert-base-vietnamese-sentiment
+MODEL_NAME = "wonrax/phobert-base-vietnamese-sentiment"
 
 # Mapping nhãn model -> nhãn yêu cầu
 LABEL_MAP = {
@@ -17,13 +14,9 @@ LABEL_MAP = {
 # Cache model toàn cục
 _nlp_pipeline = None
 
-
 def load_model():
     """
     Tải PhoBERT pipeline và cache lại
-    
-    Returns:
-        pipeline: Hugging Face sentiment-analysis pipeline
     """
     global _nlp_pipeline
     
@@ -41,20 +34,6 @@ def load_model():
 
 
 def classify_sentiment(text):
-    """
-    Phân loại cảm xúc từ câu tiếng Việt
-    
-    Args:
-        text (str): Câu gốc từ người dùng
-        
-    Returns:
-        dict: {
-            "text": str,
-            "sentiment": str (POSITIVE/NEUTRAL/NEGATIVE),
-            "score": float (0-1),
-            "error_message": str hoặc None
-        }
-    """
     # Validation 1: Kiểm tra độ dài
     if not text or len(text.strip()) < 5:
         return {
@@ -65,7 +44,7 @@ def classify_sentiment(text):
         }
     
     # Validation 2: Phải chứa ký tự chữ
-    if not any(c.isalpha() for c in text):
+    if not any(word.isalpha() for word in text):
         return {
             "text": text,
             "sentiment": None,
@@ -89,7 +68,7 @@ def classify_sentiment(text):
             "text": text,
             "sentiment": None,
             "score": 0.0,
-            "error_message": "Lỗi tải model NLP"
+            "error_message": "Lỗi tải model"
         }
     
     try:

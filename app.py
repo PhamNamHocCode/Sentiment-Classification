@@ -1,10 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox
-import sys
-import os
-
-# Thêm thư mục gốc vào Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from src.core import database as db
 from src.core import sentiment as nlp
@@ -22,7 +17,7 @@ def main():
         return
     
     # Tải model PhoBERT
-    print("Đang tải PhoBERT model")
+    print("Đang tải PhoBERT model . . .")
     try:
         nlp.load_model()
         print("Tải model thành công")

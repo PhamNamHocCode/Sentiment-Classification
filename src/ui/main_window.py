@@ -8,7 +8,7 @@ from src.ui.test_dialog import TestCaseDialog
 class SentimentApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Phân loại Cảm xúc Tiếng Việt - PhoBERT")
+        self.root.title("Phân loại cảm xúc Tiếng Việt - PhoBERT")
         self.root.geometry("1200x700")
         self.root.resizable(True, True)
         
@@ -29,7 +29,7 @@ class SentimentApp:
         left_frame.grid(row=0, column=0, sticky="nsew", padx=(10, 5))
         
         # Header
-        ttk.Label(left_frame, text="Phân loại Cảm xúc Tiếng Việt", 
+        ttk.Label(left_frame, text="Phân loại cảm xúc Tiếng Việt", 
                  font=("Arial", 16, "bold")).pack(pady=(0, 10))
         ttk.Label(left_frame, text="Sử dụng PhoBERT Transformer", 
                  font=("Arial", 10)).pack(pady=(0, 20))
@@ -49,7 +49,7 @@ class SentimentApp:
                                        command=self._handle_classify)
         self.classify_btn.pack(fill="x", pady=(0, 20))
         
-        # Loading indicator
+        # Loading
         self.loading_label = ttk.Label(left_frame, text="", 
                                        font=("Arial", 10), foreground="blue")
         self.loading_label.pack(pady=(0, 10))
@@ -110,7 +110,7 @@ class SentimentApp:
         button_frame = ttk.Frame(right_frame)
         button_frame.pack(fill="x", pady=(10, 0))
         
-        ttk.Button(button_frame, text="Làm mới DS", 
+        ttk.Button(button_frame, text="Làm mới danh sách", 
                   command=self.refresh_history).pack(side="left", padx=(0, 5))
         
         ttk.Button(button_frame, text="Tải thêm 50", 
@@ -139,7 +139,7 @@ class SentimentApp:
             messagebox.showwarning("Cảnh báo", "Vui lòng nhập câu cần phân loại")
             return
         
-        # Disable button và hiển thị loading
+        # Tắt button và hiển thị loading
         self.is_processing = True
         self.classify_btn.config(state="disabled")
         self.loading_label.config(text="Đang phân tích")
@@ -242,7 +242,7 @@ class SentimentApp:
             # Định dạng tag màu
             self.tree.tag_configure("positive", foreground="green")
             self.tree.tag_configure("negative", foreground="red")
-            self.tree.tag_configure("neutral", foreground="orange")
+            self.tree.tag_configure("neutral", foreground="blue")
             
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể tải lịch sử: {e}")
