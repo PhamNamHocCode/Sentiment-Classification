@@ -14,7 +14,7 @@ class SentimentApp:
         
         # Biến trạng thái
         self.is_processing = False
-        self.history_offset = 0
+        self.current_history_page = 0
         self.history_limit = 50
         
         # Tạo giao diện
@@ -85,6 +85,11 @@ class SentimentApp:
         self.count_label = ttk.Label(header_frame, text="(0 bản ghi)", 
                                      font=("Arial", 9), foreground="gray")
         self.count_label.pack(side="left", padx=(5, 0))
+        
+        # Pagination status
+        self.pagination_label = ttk.Label(right_frame, text="", 
+                                         font=("Arial", 9), foreground="blue")
+        self.pagination_label.pack(anchor="w", pady=(0, 5))
         columns = ("ID", "Thời gian", "Nội dung", "Cảm xúc")
         self.tree = ttk.Treeview(right_frame, columns=columns, show="headings", height=20)
         
@@ -113,10 +118,11 @@ class SentimentApp:
         ttk.Button(button_frame, text="Làm mới danh sách", 
                   command=self.refresh_history).pack(side="left", padx=(0, 5))
         
-        ttk.Button(button_frame, text="Tải thêm 50", 
-                  command=self._load_more).pack(side="left", padx=5)
+        self.load_more_btn = ttk.Button(button_frame, text="Tải thêm 50", 
+                  command=self._load_more)
+        self.load_more_btn.pack(side="left", padx=5)
         
-        ttk.Button(button_frame, text="Xóa lịch sử", 
+        ttk.Button(button_frame, text="Xóa tất cả", 
                   command=self._clear_history).pack(side="left", padx=5)
         
         self.root.columnconfigure(0, weight=2)
@@ -211,8 +217,8 @@ class SentimentApp:
         for item in self.tree.get_children():
             self.tree.delete(item)
         
-        # Reset offset
-        self.history_offset = 0
+        # Reset về trang đầu
+        self.current_history_page = 0
         
         # Tải dữ liệu mới
         try:
@@ -220,6 +226,16 @@ class SentimentApp:
             total_count = db.get_total_count()
             
             self.count_label.config(text=f"({total_count} bản ghi)")
+            
+            # Cập nhật pagination status
+            loaded_count = min(self.history_limit, total_count)
+            remaining = total_count - loaded_count
+            if remaining > 0:
+                self.pagination_label.config(text=f"Hiển thị {loaded_count} mới nhất (còn {remaining} bản ghi cũ hơn)")
+                self.load_more_btn.config(state="normal")
+            else:
+                self.pagination_label.config(text=f"Hiển thị tất cả {loaded_count} bản ghi")
+                self.load_more_btn.config(state="disabled")
             
             for record in history:
                 sentiment = record['sentiment']
@@ -249,14 +265,17 @@ class SentimentApp:
     
     def _load_more(self):
         """Tải thêm 50 bản ghi"""
-        self.history_offset += self.history_limit
+        self.current_history_page += 1
+        offset = self.current_history_page * self.history_limit
         
         try:
-            history = db.get_history(limit=self.history_limit, offset=self.history_offset)
+            history = db.get_history(limit=self.history_limit, offset=offset)
+            total_count = db.get_total_count()
             
             if not history:
                 messagebox.showinfo("Thông báo", "Không còn dữ liệu để tải")
-                self.history_offset -= self.history_limit
+                self.current_history_page -= 1
+                self.load_more_btn.config(state="disabled")
                 return
             
             for record in history:
@@ -275,6 +294,16 @@ class SentimentApp:
                     record['text'][:50] + "..." if len(record['text']) > 50 else record['text'],
                     sentiment
                 ), tags=(tag,))
+            
+            # Cập nhật pagination status
+            loaded_count = min((self.current_history_page + 1) * self.history_limit, total_count)
+            remaining = total_count - loaded_count
+            if remaining > 0:
+                self.pagination_label.config(text=f"Đã tải {loaded_count}/{total_count} bản ghi (còn {remaining} bản ghi)")
+                self.load_more_btn.config(state="normal")
+            else:
+                self.pagination_label.config(text=f"Đã tải tất cả {total_count} bản ghi")
+                self.load_more_btn.config(state="disabled")
             
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể tải thêm: {e}")

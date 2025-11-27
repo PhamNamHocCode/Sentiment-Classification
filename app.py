@@ -26,7 +26,7 @@ def main():
         messagebox.showerror("Lỗi", f"Không thể tải model PhoBERT: {e}\n\nVui lòng kiểm tra kết nối internet")
         return
     
-    # Khởi chạy Tkinter
+    # Chạy app
     root = tk.Tk()
     app = SentimentApp(root)
     root.mainloop()

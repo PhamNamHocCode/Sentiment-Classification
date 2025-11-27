@@ -1,37 +1,34 @@
 from transformers import pipeline
-from src.core.preprocessing import preprocess
+from src.core.preprocessing import preprocess, calculate_rule_based_score
 
 # Model: https://huggingface.co/wonrax/phobert-base-vietnamese-sentiment
 MODEL_NAME = "wonrax/phobert-base-vietnamese-sentiment"
 
-# Mapping nhãn model -> nhãn yêu cầu
 LABEL_MAP = {
     "POS": "POSITIVE",
     "NEG": "NEGATIVE", 
     "NEU": "NEUTRAL"
 }
 
-# Cache model toàn cục
-_nlp_pipeline = None
+nlp_pipeline = None
 
 def load_model():
     """
-    Tải PhoBERT pipeline và cache lại
+    Tải model PhoBERT
     """
-    global _nlp_pipeline
+    global nlp_pipeline
     
-    if _nlp_pipeline is not None:
-        return _nlp_pipeline
+    if nlp_pipeline is not None:
+        return nlp_pipeline
     
     try:
         print("Đang tải PhoBERT model")
-        _nlp_pipeline = pipeline('sentiment-analysis', model=MODEL_NAME)
+        nlp_pipeline = pipeline('sentiment-analysis', model=MODEL_NAME)
         print("Tải model thành công")
-        return _nlp_pipeline
+        return nlp_pipeline
     except Exception as e:
         print(f"Lỗi tải model: {e}")
         return None
-
 
 def classify_sentiment(text):
     # Validation 1: Kiểm tra độ dài
@@ -72,25 +69,52 @@ def classify_sentiment(text):
         }
     
     try:
-        # Bước 1: Tiền xử lý
+        # Bước 1: Tính rule-based score
+        rule_sentiment, rule_confidence = calculate_rule_based_score(text)
+        
+        # Bước 2: Tiền xử lý
         processed_text = preprocess(text)
         
-        # Bước 2: Phân loại qua pipeline
+        # Bước 3: Phân loại qua pipeline
         result = nlp_pipeline(processed_text)[0]
         
-        score = result['score']
-        label = result['label']
+        model_score = result['score']
+        model_label = result['label']
+        model_sentiment = LABEL_MAP.get(model_label, "NEUTRAL")
         
-        # Bước 3: Ánh xạ nhãn và xử lý ngưỡng
-        if score < 0.5:
-            final_sentiment = "NEUTRAL"
+        # Bước 4: Kết hợp model + rule-based Hybrid
+        # Ưu tiên rule-based nếu có confidence cao
+        if rule_sentiment and rule_confidence > 0.6:
+            final_sentiment = rule_sentiment
+            final_score = rule_confidence
+        # Nếu model confident >0.7 thì dùng model
+        elif model_score > 0.7:
+            final_sentiment = model_sentiment
+            final_score = model_score
+        # Kết hợp khi cả 2 đêu không chắc chắn
+        elif rule_sentiment:
+            # Khi cả 2 có cùng quan điểm
+            if rule_sentiment == model_sentiment:
+                final_sentiment = rule_sentiment
+                final_score = (rule_confidence * 0.6 + model_score * 0.4)
+            else:
+                # Ưu tiên rule-based khi có xung đột
+                final_sentiment = rule_sentiment
+                final_score = rule_confidence * 0.8
         else:
-            final_sentiment = LABEL_MAP.get(label, "NEUTRAL")
+            # Trường hợp không tìm thấy keywords nào rule_sentiment = None nên sẽ phân loại theo model
+            if model_score < 0.5:
+                # Nếu model cũng không chắc chắn thì chọn NEUTRAL
+                final_sentiment = "NEUTRAL"
+            else:
+                # Model chắc chắn thì dùng kết quả model
+                final_sentiment = model_sentiment
+            final_score = model_score
         
         return {
             "text": text,
             "sentiment": final_sentiment,
-            "score": score,
+            "score": final_score,
             "error_message": None
         }
         
