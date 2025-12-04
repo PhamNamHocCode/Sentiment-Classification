@@ -9,7 +9,7 @@ class SentimentApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Phân loại cảm xúc Tiếng Việt - PhoBERT")
-        self.root.geometry("1200x700")
+        self.root.state("zoomed")
         self.root.resizable(True, True)
         
         # Biến trạng thái
